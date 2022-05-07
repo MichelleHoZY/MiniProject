@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+</head>
+    <body>
+        <form method="get" action="/result">
+            <table>
+                <tr>
+                    <td><label for name="input">Search: </label> </td>
+                    <td><input type="text" name="input" required> </td>
+                </tr>
+                <tr>
+                    <td><label for name="type">Type: </label> </td>
+                    <td>
+                        <select name="type">
+                            <option value="movie">Movie</option>
+                            <option value="series">Series</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for name="service">Service: </label> </td>
+                    <td>
+                        <select name="service">
+                            <option value="netflix">Netflix</option>
+                            <option value="disney">Disney +</option>
+                            <option value="prime">Prime</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for name="country">Country: </label> </td>
+                    <td><select name="country">
+                        <option value="sg">SG</option>
+                        <option value="uk">UK</option>
+                        <option value="us">US</option>
+                    </select> </td>
+                </tr>
+            </table>
+            <button type="submit">Search</button>
+        </form>
+    </body>
+</html>
