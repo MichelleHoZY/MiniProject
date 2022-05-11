@@ -37,14 +37,12 @@ create table actors(
     references media(title)
 );
 
--- create streaming table
-create table streaming_sites(
-    id int auto_increment not null,
-    title varchar(256) not null,
-    streaming_site varchar(64) not null,
+-- create episode table
+create table episodes(
+    tconst varchar(10) not null,
+    parentTconst varchar(10) not null,
+    seasonNumber smallint,
+    episodeNumber mediumint,
 
-    primary key(id),
-    constraint fk_title_2
-    foreign key(title)
-    references media(title)
+    primary key(tconst)
 );
