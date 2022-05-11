@@ -3,7 +3,7 @@ on: [ "push" ]
 env: 
   RAPID_API_KEY: ${{ secrets.rapid_api_key }}
   OM_API_KEY : ${{ secrets.om_api_key }}
-  SPRING_DATASOURCE_PASSWORD : $ {{ secrets.spring_datasource_password }}
+  SPRING_DATASOURCE_PASSWORD : ${{ secrets.spring_datasource_password }}
 jobs:
   step1:
     runs-on: ubuntu-latest
