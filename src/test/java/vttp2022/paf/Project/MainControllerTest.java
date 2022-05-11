@@ -23,6 +23,7 @@ public class MainControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    //THIS
     @Test
     public void testingNonexistentTitleShouldFail() {
 
@@ -164,6 +165,7 @@ public class MainControllerTest {
         }
     }
 
+    //THIS
     @Test
     public void testingMultipleStreamingSitesShouldReturn200() {
 
@@ -192,6 +194,7 @@ public class MainControllerTest {
         }
     }
 
+    //THIS
     @Test
     public void testingMultipleSeasonsShouldReturn200() {
 
@@ -220,6 +223,7 @@ public class MainControllerTest {
         }
     }
 
+    //THIS
     @Test
     public void testingApiReturnsNoResults() {
 
