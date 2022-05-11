@@ -5,10 +5,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
-import vttp2022.paf.Project.model.Media;
-import vttp2022.paf.Project.model.StreamingSite;
+import vttp2022.paf.Project.model.DatabaseResult;
 
 import static vttp2022.paf.Project.repository.Queries.*;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static vttp2022.paf.Project.model.ConversionUtils.*;
 
 @Repository
 public class MainRepository {
@@ -16,46 +20,44 @@ public class MainRepository {
     @Autowired
     private JdbcTemplate template;
 
-    public boolean insertMedia(Media media) {
-        int count = template.update(
-          SQL_INSERT_NEW_MEDIA, media.getTitle(), media.getOriginalTitle(), media.getRating(), media.getOverview(),
-            media.getImdbId(), media.getYear(), media.getRuntime(), media.getLanguage(),
-            media.getLeaving(), media.getPosterPath() 
-        );
-
-        return count == 1;        
-    }
-
-    public boolean insertStreamingSite(StreamingSite site) {
-        int count = template.update(
-            SQL_INSERT_NEW_STREAMING_SITE, site.getTitle(), site.getStreamingSite()
-        );
-
-        return count == 1;
-    }
-
-    public boolean searchExistingTitle(Media media) {
+    public List<DatabaseResult> searchExistingTitle(String input) {
         SqlRowSet rs = template.queryForRowSet(
-            SQL_SEARCH_MEDIA_BY_TITLE, media.getTitle()
+            SQL_SEARCH_MEDIA_BY_TITLE, input
+        );
+
+        List<DatabaseResult> databaseResultList = new LinkedList<>();
+
+        while (rs.next()) {
+            DatabaseResult result = new DatabaseResult();
+            result = convertDatabaseResult(rs);
+            databaseResultList.add(result);
+        }
+        
+        return databaseResultList;
+    }
+
+    public Integer getNumberOfEpisodes(String imdbId) {
+        SqlRowSet rs = template.queryForRowSet(
+            SQL_GET_NUMBER_OF_EPISODES, imdbId
         );
 
         if (!rs.next()) {
-            return false;
+            return 0;
         }
 
-        return true;
+        return rs.getInt("totalEpisodes");
     }
 
-    public boolean searchExistingStreamingSite(StreamingSite site) {
+    public Integer getNumberOfSeasons(String imdbId) {
         SqlRowSet rs = template.queryForRowSet(
-            SQL_SEARCH_STREAMING_SITE, site.getTitle()
+            SQL_GET_NUMBER_OF_SEASONS, imdbId
         );
 
         if (!rs.next()) {
-            return false;
+            return 0;
         }
 
-        return true;
+        return rs.getInt("totalSeasons");
     }
     
 }

@@ -8,20 +8,18 @@ create schema streaming;
 use streaming;
 
 -- create media table
-create table media(
-    title varchar(256) not null,
-    original_title varchar(256) not null,
-    rating float (3,1) not null,
-    overview varchar(1000),
-    imdb_id char(30),
-    year int not null,
-    runtime int not null,
-    language char(5),
-    leaving int not null,
-    poster_path varchar(64) not null,
-    search_date date not null,
+create table imdb_data(
+    tconst varchar(10) not null,
+    titleType varchar(15) not null,,
+    primaryTitle varchar(450) not null,
+    originalTitle varchar(450) not null,
+    isAdult char(1),
+    startYear smallint,
+    endYear smallint,
+    runtimeMinutes smallint,
+    genres varchar(35),
 
-    primary key(title)    
+    primary key(tconst)
 );
 
 -- index title

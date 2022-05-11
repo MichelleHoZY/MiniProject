@@ -5,9 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +21,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
-import vttp2022.paf.Project.model.Media;
-import vttp2022.paf.Project.model.StreamingSite;
+import vttp2022.paf.Project.model.DatabaseResult;
+import vttp2022.paf.Project.model.SearchResult;
 import vttp2022.paf.Project.repository.MainRepository;
 
 import static vttp2022.paf.Project.model.ConversionUtils.*;
@@ -28,97 +32,85 @@ import static vttp2022.paf.Project.model.ConversionUtils.*;
 @Service
 public class MainService {
 
+    Logger logger = LoggerFactory.getLogger(MainService.class);
+
     @Autowired
     private MainRepository mainRepo;
 
     @Value("${rapid.api.key}")
-    private String apiKey;
+    private String rapidApiKey;
 
-    public static final String baseURL = "https://streaming-availability.p.rapidapi.com/search/basic?";
+    @Value("${om.api.key}")
+    private String omApiKey;
 
-    public Integer makingRequest(String input, String country, String type, String service) throws IOException {
-        Integer pages = 1;
+    public static final String baseURL = "https://streaming-availability.p.rapidapi.com/get/basic?";
 
-        String url = UriComponentsBuilder
-            .fromUriString(baseURL)
-            .queryParam("country", country)
-            .queryParam("service", service)
-            .queryParam("type", type)
-            .queryParam("keyword", input)
-            .queryParam("page", pages)
-            .toUriString();
+    public static final String omdbBaseURL = "http://www.omdbapi.com/";
 
-        System.out.println(">>>>> URL: " + url);
+    public List<DatabaseResult> searchDatabaseForInput(String input) throws IOException {
+        List<DatabaseResult> databaseResultList = new LinkedList<>();
+        databaseResultList = mainRepo.searchExistingTitle(input);
 
-        RequestEntity<Void> req = RequestEntity
-            .get(url)
-            .header("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com")
-            .header("X-RapidAPI-Key", apiKey)
-            .accept(MediaType.APPLICATION_JSON)
-            .build();
+        return databaseResultList;
+    }   
 
-        RestTemplate template = new RestTemplate();
-
-        ResponseEntity<String> resp = template.exchange(req, String.class);
-
-        List<Media> resultsList = new LinkedList<>();
-
-        try (InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())) {
-            JsonReader reader = Json.createReader(is);
-            JsonObject object = reader.readObject();
-            String jsonResponse = object.toString();
-            pages = object.getInt("total_pages");
-
-            System.out.println(">>>>> JSON Response: " + jsonResponse);
-            
-            JsonArray resultsArr = object.getJsonArray("results");
-
-            for (int i = 0; i < resultsArr.size(); i++) {
-                JsonObject resultsObj = resultsArr.getJsonObject(i);
-
-                Media media = convertJSON(resultsObj, service, country);
-                
-                if (!mainRepo.searchExistingTitle(media)) { // if it's not inside, add it
-                    resultsList.add(media);
-                } 
-            }
-        }
-
-        System.out.println(">>>>> Results list: " + resultsList);
-
-        Integer total = 0;
-
-        for (Media media : resultsList) {
-            if (mainRepo.insertMedia(media)) {
-                for (StreamingSite site : media.getStreamList()) {
-                    if (mainRepo.insertStreamingSite(site)) {
-                        total = total + 1;
-                    }
-                }
-            }
-        }
-
-        System.out.println(">>>>> Total added into database if one page: " + total);
+    public Optional<SearchResult> ratingsApiRequest(String imdbId) throws IOException {
         
-        if (pages > 1) {
-            for (int y = 2; y <= pages; y++) {
-                total = total + multipleCalls(y, country, service, type, input);
+        String url = UriComponentsBuilder
+            .fromUriString(omdbBaseURL)
+            .queryParam("i", imdbId)
+            .queryParam("apikey", omApiKey)
+            .toUriString();
+
+            System.out.println(">>>>> OM URL: " + url);
+
+            RequestEntity<Void> req = RequestEntity
+                .get(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .build();
+
+            RestTemplate template = new RestTemplate();
+
+            ResponseEntity<String> resp = template.exchange(req, String.class);
+
+            try (InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())) {
+                JsonReader reader = Json.createReader(is);
+                JsonObject object = reader.readObject();
+                String jsonResponse = object.toString();
+
+                System.out.println(">>>>> OM JSON Response: " + jsonResponse);
+
+                String response = object.getString("Response");
+
+                if (response.equals("False")) {
+                    return Optional.empty();
+                }
+
+                String type = object.getString("Type");
+
+                SearchResult result = convertSearchResult(object, imdbId);
+
+                if (type.equals("series")) {
+                    result.setTotalSeasons(mainRepo.getNumberOfSeasons(imdbId));
+                    result.setTotalEpisodes(mainRepo.getNumberOfEpisodes(imdbId));
+                }
+
+                System.out.println(">>>>> Search result details: " + result);
+
+                List<String> streamingList = streamingApiRequest(imdbId);
+                result.setStreaming(streamingList);
+
+                return Optional.of(result);
+
+                }
             }
-        }
 
-        System.out.println(">>>>> Total added into database if multiple pages: " + total);
+    public List<String> streamingApiRequest(String imdbId) throws IOException {
 
-        return total;
-    }
-
-    public Integer multipleCalls(Integer pages, String country, String service, String type, String input) throws IOException {
         String url = UriComponentsBuilder
             .fromUriString(baseURL)
-            .queryParam("country", country)
-            .queryParam("service", service)
-            .queryParam("type", type)
-            .queryParam("keyword", input)
-            .queryParam("page", pages)
+            .queryParam("country", "sg")
+            .queryParam("imdb_id", imdbId)
             .toUriString();
 
         System.out.println(">>>>> URL: " + url);
@@ -126,15 +118,12 @@ public class MainService {
         RequestEntity<Void> req = RequestEntity
             .get(url)
             .header("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com")
-            .header("X-RapidAPI-Key", apiKey)
+            .header("X-RapidAPI-Key", rapidApiKey)
             .accept(MediaType.APPLICATION_JSON)
             .build();
 
         RestTemplate template = new RestTemplate();
-
         ResponseEntity<String> resp = template.exchange(req, String.class);
-
-        List<Media> resultsList = new LinkedList<>();
 
         try (InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())) {
             JsonReader reader = Json.createReader(is);
@@ -143,35 +132,17 @@ public class MainService {
 
             System.out.println(">>>>> JSON Response: " + jsonResponse);
             
-            JsonArray resultsArr = object.getJsonArray("results");
+            JsonObject streamingInfo = object.getJsonObject("streamingInfo");
 
-            for (int i = 0; i < resultsArr.size(); i++) {
-                JsonObject resultsObj = resultsArr.getJsonObject(i);
-
-                Media media = convertJSON(resultsObj, service, country);
-                
-                if (!mainRepo.searchExistingTitle(media)) { // if it's not inside, add it
-                    resultsList.add(media);
-                } 
+            Set<String> streamingSiteKeys = streamingInfo.keySet();
+            List<String> list = new LinkedList<>();
+            for (String value : streamingSiteKeys) {
+                String site = value;
+                list.add(site);
             }
+            
+            return list;
         }
-
-        System.out.println(">>>>> Results list: " + resultsList);
-
-        Integer total = 0;
-
-        for (Media media : resultsList) {
-            if (mainRepo.insertMedia(media)) {
-                for (StreamingSite site : media.getStreamList()) {
-                    if (mainRepo.insertStreamingSite(site)) {
-                        total = total + 1;
-                    }
-                }
-            }
-        }
-
-        System.out.println(">>>>> Total added into database: " + total);
-    
-        return total;        
     }
+
 }

@@ -8,12 +8,10 @@ jobs:
     steps:
     - name: Checkout src 
       uses: actions/checkout@v2
-    - name: Echo branch
-      run: echo "Branch ${{ github.ref_name }}"
     - name: Deploy
       uses: akhileshns/heroku-deploy@v3.12.12 
       with:
         heroku_api_key: ${{ secrets.heroku_api_key }}
-        heroku_app_name: hzymproject
+        heroku_app_name: streaminggowhere
         heroku_email: ${{ secrets.email }}
         branch: ${{ github.ref_name }}
