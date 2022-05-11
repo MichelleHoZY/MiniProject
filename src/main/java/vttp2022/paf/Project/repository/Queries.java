@@ -10,4 +10,7 @@ public class Queries {
 
     public static final String SQL_GET_NUMBER_OF_SEASONS = 
         "select max(seasonNumber) as totalSeasons from episodes where parentTconst = ?";
+
+    public static final String SQL_GET_SEASON_EPISODES = 
+        "select A.seasonNumber as season, A.episodeNumber as episode, B.primaryTitle as title, B.startYear as year, B.runtimeMinutes as runtime from (select * from episodes where parentTconst = ?) A inner join imdb_data as B on A.tconst = B.tconst order by A.seasonNumber, A.episodeNumber";
     }

@@ -24,6 +24,7 @@ public class SearchResult {
     private Integer totalSeasons;
     private Integer totalEpisodes;
     private List<String> streaming = new LinkedList<>();
+    private List<Episode> episodeList = new LinkedList<>();
     
     public String getTitle() {
         return title;
@@ -85,6 +86,9 @@ public class SearchResult {
     public void setRatings(List<Ratings> ratings) {
         this.ratings = ratings;
     }
+    public void addRatings(Ratings ratings) {
+        this.ratings.add(ratings);
+    }
     public String getPoster() {
         return poster;
     }
@@ -139,12 +143,22 @@ public class SearchResult {
     public void setTotalEpisodes(Integer totalEpisodes) {
         this.totalEpisodes = totalEpisodes;
     }
+    public List<Episode> getEpisodeList() {
+        return episodeList;
+    }
+    public void setEpisodeList(List<Episode> episodeList) {
+        this.episodeList = episodeList;
+    }
+    public void addEpisode(Episode episode) {
+        this.episodeList.add(episode);
+    }
     @Override
     public String toString() {
         return "SearchResult [actors=" + actors + ", awards=" + awards + ", country=" + country + ", director="
-                + director + ", genre=" + genre + ", imdbId=" + imdbId + ", language=" + language + ", plot=" + plot
-                + ", poster=" + poster + ", rated=" + rated + ", ratings=" + ratings + ", released=" + released
-                + ", runtime=" + runtime + ", streaming=" + streaming + ", title=" + title + ", totalEpisodes="
-                + totalEpisodes + ", totalSeasons=" + totalSeasons + ", type=" + type + ", year=" + year + "]";
+                + director + ", episodeList=" + episodeList + ", genre=" + genre + ", imdbId=" + imdbId + ", language="
+                + language + ", plot=" + plot + ", poster=" + poster + ", rated=" + rated + ", ratings=" + ratings
+                + ", released=" + released + ", runtime=" + runtime + ", streaming=" + streaming + ", title=" + title
+                + ", totalEpisodes=" + totalEpisodes + ", totalSeasons=" + totalSeasons + ", type=" + type + ", year="
+                + year + "]";
     }
 }

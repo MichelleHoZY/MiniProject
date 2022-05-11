@@ -89,27 +89,16 @@ public class ConversionUtils {
         return result;
     }
 
-    public static DatabaseResult createDatabaseResult(JsonObject object) {
-        DatabaseResult result = new DatabaseResult();
+    public static Episode convertEpisode(SqlRowSet rs) {
+        Episode episode = new Episode();
 
-        result.setPrimaryTitle(object.getString("Title"));
-        result.setOriginalTitle(object.getString("Title"));
-        String yearString = object.getString("Year").substring(0, 4);
-        Integer year = Integer.parseInt(yearString);
-        result.setYear(year);
-        result.setGenre(object.getString("Genre"));
-        result.setImdbId(object.getString("imdbID"));
+        episode.setTitle(rs.getString("title"));
+        episode.setSeasonNumber(rs.getInt("season"));
+        episode.setEpisodeNumber(rs.getInt("episode"));
+        episode.setYear(rs.getInt("year"));
+        episode.setRuntime(rs.getInt("runtime"));
 
-        String type = object.getString("Type");
-
-        if (type.equals("movie")) {
-            result.setType("movie");
-        } else {
-            result.setType("tvSeries");
-        }
-
-
-        return result;
+        return episode;
     }
     
 }

@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
 import vttp2022.paf.Project.model.DatabaseResult;
+import vttp2022.paf.Project.model.Episode;
 
 import static vttp2022.paf.Project.repository.Queries.*;
 
@@ -58,6 +59,22 @@ public class MainRepository {
         }
 
         return rs.getInt("totalSeasons");
+    }
+
+    public List<Episode> getSeasonEpisodes(String imdbId) {
+        SqlRowSet rs = template.queryForRowSet(
+            SQL_GET_SEASON_EPISODES, imdbId
+        );
+
+        List<Episode> episodeList = new LinkedList<>();
+
+        while (rs.next()) {
+            Episode episode = new Episode();
+            episode = convertEpisode(rs);
+            episodeList.add(episode);
+        }
+
+        return episodeList;
     }
     
 }
