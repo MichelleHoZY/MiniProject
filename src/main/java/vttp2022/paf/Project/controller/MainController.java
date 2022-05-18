@@ -67,6 +67,7 @@ public class MainController {
         mvc.addObject("result", databaseResultList);
         mvc.setStatus(HttpStatus.OK);
         mvc.setViewName("result");
+        mvc.addObject("input", input);
 
         return mvc;
     }

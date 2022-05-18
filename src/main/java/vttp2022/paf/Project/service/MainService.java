@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import vttp2022.paf.Project.model.DatabaseResult;
 import vttp2022.paf.Project.model.SearchResult;
+import vttp2022.paf.Project.model.Streaming;
 import vttp2022.paf.Project.repository.MainRepository;
 
 import static vttp2022.paf.Project.model.ConversionUtils.*;
@@ -97,15 +99,14 @@ public class MainService {
 
                 System.out.println(">>>>> Search result details: " + result);
 
-                List<String> streamingList = streamingApiRequest(imdbId);
-                result.setStreaming(streamingList);
+                result = streamingApiRequest(imdbId, result);
 
                 return Optional.of(result);
 
                 }
             }
 
-    public List<String> streamingApiRequest(String imdbId) throws IOException {
+    public SearchResult streamingApiRequest(String imdbId, SearchResult result) throws IOException {
 
         String url = UriComponentsBuilder
             .fromUriString(baseURL)
@@ -135,13 +136,25 @@ public class MainService {
             JsonObject streamingInfo = object.getJsonObject("streamingInfo");
 
             Set<String> streamingSiteKeys = streamingInfo.keySet();
-            List<String> list = new LinkedList<>();
+            List<Streaming> list = new LinkedList<>();
             for (String value : streamingSiteKeys) {
-                String site = value;
-                list.add(site);
+                Streaming streaming = new Streaming();
+                streaming.setSite(value);
+
+                JsonObject siteName = streamingInfo.getJsonObject(value);
+                JsonObject sg = siteName.getJsonObject("sg");
+                String link = sg.getString("link");
+                streaming.setLink(link);
+
+                list.add(streaming);
             }
             
-            return list;
+            result.setStreaming(list);
+
+            String plot = object.getString("overview");
+            result.setPlot(plot);
+
+            return result;
         }
     }
 

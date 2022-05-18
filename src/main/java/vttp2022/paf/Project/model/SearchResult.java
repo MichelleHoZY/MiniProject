@@ -23,7 +23,7 @@ public class SearchResult {
     private String imdbId;
     private Integer totalSeasons;
     private Integer totalEpisodes;
-    private List<String> streaming = new LinkedList<>();
+    private List<Streaming> streaming = new LinkedList<>();
     private List<Episode> episodeList = new LinkedList<>();
     
     public String getTitle() {
@@ -125,11 +125,14 @@ public class SearchResult {
     public void setImdbId(String imdbId) {
         this.imdbId = imdbId;
     }
-    public List<String> getStreaming() {
+    public List<Streaming> getStreaming() {
         return streaming;
     }
-    public void setStreaming(List<String> streaming) {
+    public void setStreaming(List<Streaming> streaming) {
         this.streaming = streaming;
+    }
+    public void addStreaming(Streaming streaming) {
+        this.streaming.add(streaming);
     }
     public Integer getTotalSeasons() {
         return totalSeasons;
@@ -152,6 +155,7 @@ public class SearchResult {
     public void addEpisode(Episode episode) {
         this.episodeList.add(episode);
     }
+    
     @Override
     public String toString() {
         return "SearchResult [actors=" + actors + ", awards=" + awards + ", country=" + country + ", director="

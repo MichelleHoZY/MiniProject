@@ -31,9 +31,6 @@ public class ConversionUtils {
         String director = object.getString("Director");
         result.setDirector(director);
 
-        String plot = object.getString("Plot");
-        result.setPlot(plot);
-
         String awards = object.getString("Awards");
         result.setAwards(awards);
 
@@ -85,6 +82,18 @@ public class ConversionUtils {
         result.setYear(rs.getInt("startYear"));
         result.setGenre(rs.getString("genres"));
         result.setImdbId(rs.getString("tconst"));
+        
+        String titleType = rs.getString("titleType");
+
+        if (titleType.equals("movie")) {
+            result.setType("Movie");
+        } else if (titleType.equals("tvSeries")) {
+            result.setType("TV Series");
+        } else if (titleType.equals("tvMiniSeries")) {
+            result.setType("Mini Series");
+        } else {
+            result.setType("TV Movie");
+        }
 
         return result;
     }

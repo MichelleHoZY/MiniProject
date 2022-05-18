@@ -9,18 +9,30 @@
 </head>
     <body>
         <form method="post" action="/show/result">
-            <div class="row-g3">
+            <div class="container my-5">
+                <div class="row align-items-end text-center" style="height: 200px">
+                    <div class="col"><h1><strong>streaminggowhere</strong></h1></div>
+                </div>
                 <div class="container">
-                    <div class="col-sm-12">
-                        <h1><strong>STREAMINGGOWHERE</strong></h1>
-                        <p>Find out which streaming platforms are playing your favourites!</p>
-                        <p>Supported streaming sites: Netflix, Prime, AppleTV+, Mubi, Zee5 and Curiosity Stream</p>
-                        <input type="text" name="input" class="form-control">
-                        <button type="submit" class="btn btn-primary">Search</button>
+                    <div class="row justify-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-7"><input text="text" name="input" class="form-control" placeholder="Search for your favourite movies and series"></div>
+                        <div class="col-auto"><button type="submit" class="btn btn-outline-secondary">Search</button></div>
                     </div>
-
-                    <p data-th-text="${error}"></p>
-                        
+                </div>
+                <div class="container">
+                    <div class="row align-items-start text-center" style="height: 65px">
+                        <p></p>
+                        <div class="col-2"></div>
+                        <div class="col-8">Supported streaming sites: Netflix, Prime, AppleTV+, Mubi, Zee5 and Curiosity Stream</div>
+                        <div class="col-2"></div>
+                    </div>
+                    <div class="row text-center" >
+                        <p></p>
+                        <div class="col-2"></div>
+                        <div class="col-7 mx-3" data-th-text="${error}"></div>
+                        <div class="col-auto"></div>
+                    </div>
                 </div>
             </div>
         </form>
