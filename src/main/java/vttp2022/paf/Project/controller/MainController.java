@@ -47,7 +47,7 @@ public class MainController {
         if ((input == null) || (input.trim().length() == 0)) {
             mvc.setViewName("index");
             mvc.setStatus(HttpStatus.BAD_REQUEST);
-            mvc.addObject("error", "No result was found.");
+            mvc.addObject("error", "No results were found.");
 
             return mvc;
         }
@@ -59,7 +59,7 @@ public class MainController {
         if ((databaseResultList.isEmpty()) || (databaseResultList == null)) {
             mvc.setViewName("index");
             mvc.setStatus(HttpStatus.BAD_REQUEST);
-            mvc.addObject("error", "No result was found.");
+            mvc.addObject("error", "No results were found.");
 
             return mvc;
         }
@@ -89,7 +89,6 @@ public class MainController {
         SearchResult result = optSearchResult.get();
 
         mvc.setViewName("show");
-        mvc.addObject("imdbId", imdbId);
         mvc.addObject("result", result);
         mvc.setStatus(HttpStatus.OK);
 

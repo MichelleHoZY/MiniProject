@@ -23,19 +23,7 @@ create table imdb_data(
 );
 
 -- index title
-create index idx_title on media(title);
-
--- create actors table
-create table actors(
-    id int auto_increment not null,
-    name varchar(64) not null,
-    title varchar(256) not null,
-
-    primary key(id),
-    constraint fk_title
-    foreign key(title)
-    references media(title)
-);
+create index idx_title on media(primaryTitle, originalTitle);
 
 -- create episode table
 create table episodes(

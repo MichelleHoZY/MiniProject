@@ -43,7 +43,7 @@ public class MainControllerTest {
         }
 
         try {
-            assertEquals("No result was found.", result.getModelAndView().getModel().get("error"));
+            assertEquals("No results were found.", result.getModelAndView().getModel().get("error"));
         } catch (Exception ex) {
             fail("Non-existent title should return no results.", ex);
             return;
@@ -71,7 +71,7 @@ public class MainControllerTest {
         }
 
         try {
-            assertEquals("No result was found.", result.getModelAndView().getModel().get("error"));
+            assertEquals("No results were found.", result.getModelAndView().getModel().get("error"));
         } catch (Exception ex) {
             fail("Invalid input should return no results.", ex);
             return;
