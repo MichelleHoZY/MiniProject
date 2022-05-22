@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,16 @@ public class MainController {
     @Autowired
     private MainService mSvc;
 
+    @RequestMapping("/createUser")
+    public String createUser() {
+        return "createUser";
+    }
+
+    @RequestMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
+
     @ExceptionHandler(HttpClientErrorException.class)
     public ModelAndView handleError404(HttpServletRequest request, Exception e)   {
             ModelAndView mvc = new ModelAndView("error");
@@ -53,7 +64,6 @@ public class MainController {
         }
 
         List<DatabaseResult> databaseResultList = new LinkedList<>();
-
         databaseResultList = mSvc.searchDatabaseForInput(input);
 
         if ((databaseResultList.isEmpty()) || (databaseResultList == null)) {
@@ -90,6 +100,64 @@ public class MainController {
 
         mvc.setViewName("show");
         mvc.addObject("result", result);
+        mvc.setStatus(HttpStatus.OK);
+
+        return mvc;
+    }
+
+    @PostMapping("/login")
+    public ModelAndView redirectPage(@RequestBody MultiValueMap<String, String> form, HttpSession sess) {
+        ModelAndView mvc = new ModelAndView();
+
+        String username = form.getFirst("username");
+        String password = form.getFirst("password");
+
+        if (mSvc.verifyLogin(username, password) == 2) {
+            sess.setAttribute("username", username); // logged in
+            mvc = new ModelAndView("redirect:/protected/loginSuccessful");
+        } else if (mSvc.verifyLogin(username, password) == 1) { // wrong password
+            mvc.setStatus(HttpStatus.FORBIDDEN);
+            mvc.setViewName("login");
+            mvc.addObject("error", "Incorrect password");
+        } else if (mSvc.verifyLogin(username, password) == 0) { // no user exists
+            mvc.setStatus(HttpStatus.NOT_FOUND); 
+            mvc.setViewName("login");
+            mvc.addObject("error", "User does not exist");
+        }
+
+        return mvc;
+    }
+
+    @PostMapping("/createUser")
+    public ModelAndView createNewUser(@RequestBody MultiValueMap<String, String> form) {
+        ModelAndView mvc = new ModelAndView();
+
+        String username = form.getFirst("username");
+        String password = form.getFirst("password");
+
+        if (mSvc.createNewUser(username, password) == 3) {
+            mvc.addObject("username", username);
+            mvc.setViewName("login");
+            mvc.setStatus(HttpStatus.CREATED);
+        } else if (mSvc.createNewUser(username, password) == 1) {
+            mvc.setViewName("error");
+            mvc.setStatus(HttpStatus.BAD_REQUEST);
+            mvc.addObject("error", "Username is taken");
+        } else {
+            mvc.setStatus(HttpStatus.BAD_REQUEST);
+            mvc.setViewName("error");
+            mvc.addObject("error", "Please enter a username");
+        }
+
+        return mvc;
+    }
+
+    @GetMapping("/logout")
+    public ModelAndView getLogout(HttpSession sess) {
+        sess.invalidate();
+
+        ModelAndView mvc = new ModelAndView();
+        mvc.setViewName("index");
         mvc.setStatus(HttpStatus.OK);
 
         return mvc;

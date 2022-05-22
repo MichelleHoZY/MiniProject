@@ -4,23 +4,58 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import vttp2022.paf.Project.service.MainService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class MainControllerTest {
 
+    @Mock
+    private MainService mSvc;
+
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    MockHttpSession mockSess;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private HttpServletRequest httpServletRequest;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+    
+        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                                 .build();
+    
+        httpServletRequest.getSession()
+                          .setAttribute("username", "user");
+    
+        mockSess = new MockHttpSession(webApplicationContext.getServletContext());
+
+        mockSess.setAttribute("username","user");
+    }
 
     @Test
     public void testingNonexistentTitleShouldFail() {
@@ -28,6 +63,7 @@ public class MainControllerTest {
         // writing a test for the case where an input is non-existent
         
         RequestBuilder req = MockMvcRequestBuilders.post("/show/result")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE)
             .param("input", "trying to find a title that doesn't exist 89");
@@ -56,6 +92,7 @@ public class MainControllerTest {
         // writing a test for the case where the input is not valid (space, # or !)
         
         RequestBuilder req = MockMvcRequestBuilders.post("/show/result")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE)
             .param("input", " ");
@@ -84,6 +121,7 @@ public class MainControllerTest {
         // writing a test for the case where a series is valid
         
         RequestBuilder req = MockMvcRequestBuilders.post("/show/result")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE)
             .param("input", "Band of Brothers");
@@ -113,6 +151,7 @@ public class MainControllerTest {
         // writing a test for the case where a movie is valid
         
         RequestBuilder req = MockMvcRequestBuilders.get("/show/tt0097165")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE);
 
@@ -142,6 +181,7 @@ public class MainControllerTest {
         // writing a test for the case where a series or movie is not yet released
         
         RequestBuilder req = MockMvcRequestBuilders.get("/show/tt2640044")
+            .session(mockSess)    
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE);
 
@@ -162,14 +202,14 @@ public class MainControllerTest {
             return;
         }
     }
-
-    //THIS
+    
     @Test
     public void testingMultipleStreamingSitesShouldReturn200() {
 
         // writing a test for the case of a valid movie
         
         RequestBuilder req = MockMvcRequestBuilders.get("/show/tt0137523")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE);
 
@@ -198,6 +238,7 @@ public class MainControllerTest {
         // writing a test for the case of a valid series with seasons and episodes
         
         RequestBuilder req = MockMvcRequestBuilders.get("/show/tt0386676")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE);
 
@@ -226,6 +267,7 @@ public class MainControllerTest {
         // writing a test for the case where the database returns information but the APIs do not
         
         RequestBuilder req = MockMvcRequestBuilders.get("/show/tt0466615")
+            .session(mockSess)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
             .accept(MediaType.TEXT_HTML_VALUE);
 

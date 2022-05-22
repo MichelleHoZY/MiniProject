@@ -24,7 +24,9 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import vttp2022.paf.Project.model.DatabaseResult;
 import vttp2022.paf.Project.model.SearchResult;
+import vttp2022.paf.Project.model.Sidebar;
 import vttp2022.paf.Project.model.Streaming;
+import vttp2022.paf.Project.model.UserRatings;
 import vttp2022.paf.Project.repository.MainRepository;
 
 import static vttp2022.paf.Project.model.ConversionUtils.*;
@@ -138,7 +140,7 @@ public class MainService {
             List<Streaming> list = new LinkedList<>();
             for (String value : streamingSiteKeys) {
                 Streaming streaming = new Streaming();
-                streaming.setSite(value);
+                streaming.setSite(convertName(value));
 
                 JsonObject siteName = streamingInfo.getJsonObject(value);
                 JsonObject sg = siteName.getJsonObject("sg");
@@ -155,6 +157,78 @@ public class MainService {
 
             return result;
         }
+    }
+
+    public int verifyLogin(String username, String password) {
+        if (mainRepo.searchUsername(username)) {
+            if (mainRepo.verifyUser(username, password)) {
+                return 2; // both user and password exists
+            } else {
+                return 1; // user exists, wrong password
+            }
+        } else {
+            return 0; // non-existent user
+        }
+    }
+
+    public int createNewUser(String username, String password) {
+        if (mainRepo.searchUsername(username)) {
+            return 1; // username is taken
+        } else if (username == null || username.trim().length() <= 0) {
+            return 2; // no username input
+        } else {
+            mainRepo.insertNewUser(username, password);
+            return 3; // user created
+        }
+
+    }
+
+    public int getUserId(String username) {
+        return mainRepo.searchUserId(username);
+    }
+
+    public Integer checkUserRating(String username, String imdbId) {
+        Integer userId = getUserId(username);
+
+        if (mainRepo.checkUserRating(userId, imdbId) == 0) {
+            return 0;
+        }
+
+        return mainRepo.checkUserRating(userId, imdbId);
+    }
+
+    public Boolean updateUserRating(String username, String imdbId, Integer rating) {
+        Integer userId = getUserId(username);
+
+        if (checkUserRating(username, imdbId) == 0) {
+            return mainRepo.insertNewUserRating(userId, imdbId, rating);
+        }
+
+        return mainRepo.updateUserRating(userId, imdbId, rating);
+    }
+
+    public List<UserRatings> recentRatings(String username) {
+        Integer userId = getUserId(username);
+
+        return mainRepo.recentRatings(userId);
+    }
+
+    public Sidebar sidebarInfo(String username) {
+        Integer userId = getUserId(username);
+
+        return mainRepo.sidebarInfo(userId);
+    }
+
+    public List<UserRatings> allRatings(String username) {
+        Integer userId = getUserId(username);
+
+        return mainRepo.allRatings(userId);
+    }
+
+    public Boolean deleteUser(String username) {
+        Integer userId = getUserId(username);
+
+        return mainRepo.deleteUser(userId);
     }
 
 }

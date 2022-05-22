@@ -109,5 +109,50 @@ public class ConversionUtils {
 
         return episode;
     }
+
+    public static String convertName(String name) {
+        String convertedName = null;
+
+        if (name == "disney") {
+            convertedName = name.substring(0,1).toUpperCase() + name.substring(1) + "+";
+        }
+
+        convertedName = name.substring(0,1).toUpperCase() + name.substring(1);
+
+        return convertedName;
+    }
+
+    public static UserRatings convertUserRating(SqlRowSet rs) {
+        UserRatings rating = new UserRatings();
+
+        rating.setTitle(rs.getString("title"));
+        rating.setRating(rs.getInt("rating"));
+
+        return rating;
+    }
+
+    public static UserRatings convertAllUserRating(SqlRowSet rs) {
+        UserRatings rating = new UserRatings();
+
+        rating.setTitle(rs.getString("title"));
+        rating.setRating(rs.getInt("rating"));
+        rating.setYear(rs.getInt("year"));
+
+        String titleType = rs.getString("type");
+
+        if (titleType.equals("movie")) {
+            rating.setType("Movie");
+        } else if (titleType.equals("tvSeries")) {
+            rating.setType("TV Series");
+        } else if (titleType.equals("tvMiniSeries")) {
+            rating.setType("Mini Series");
+        } else {
+            rating.setType("TV Movie");
+        }
+
+        rating.setImdbId(rs.getString("imdbId"));
+
+        return rating;
+    }
     
 }

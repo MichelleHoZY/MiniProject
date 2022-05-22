@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Band of Brothers</title>
+</head>
+    <body>
+        <div class="container">
+            <div class="container">
+                <div class="row border-bottom" style="height: 25px;">
+                    <div class="col-10"></div>
+                    <div class="col-1"><a data-th-href="@{/protected/ratings}">My Ratings</a></div>
+                    <div class="col-1">
+                        <form method="get" action="/logout">
+                            <a data-th-href="@{/}">Logout</a></div>
+                        </form>
+                </div>
+            <form method="post" action="/protected/show">
+                <div class="row">
+                    <div class="col-md-3"> 
+                        <div class="row mt-2">
+                            <img max-width="300 px" height="auto"> </div>
+                        </div>
+                    <div class="col-md-9">
+                        <div class="row align-items-start mt-3 mx-3">
+                            <div class="col-md-8">
+                                <h2><strong>Band of Brothers</strong></h2>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-select" style="height:36px" name="input" onchange="this.form.submit();">
+                                    <option selected>Rate</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                  </select>
+                            </div>
+                            <div class="col-md-1">
+                                <h3><strong>10/10</strong></h3>
+                            </div>
+                            <h4><strong>2001</strong><strong>, <span>Series</span></strong></h4>
+                            <h5><strong><span>Seasons: <span>1</span>, Episodes: <span>10</span>, </span>Runtime: <span>594 min</span> </strong></h5>
+                            <h5><strong>Plot: </strong></h5> <span> plot</span>
+                            <table class="table table-sm table-hover mx-2">
+                                <thead>
+                                    <th>Ratings:</th>
+                                </thead>
+                                <tr>
+                                    <td>This</td>
+                                    <td>That</td>
+                                </tr>
+                            </table>
+                            <table class="table table-sm mx-2">
+                                <thead>
+                                    <th>Streaming on:</th>
+                                </thead>
+                                <tr>
+                                    <td>This too</td>
+                                    <td style="width: auto"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    </div>
+                    <hr class="bg-secondary border-1 border-top border-secondary">
+                    <div class="row">
+                        <div class="col-5" >
+                            <div class="row align-items-end mt-2 mx-3">
+                            <h5><strong>Additional Information:</strong></h5>
+                            <strong>Rated: </strong> <span>TM-MA</span>
+                            <strong>Director: </strong> <span>N/A</span>
+                            <strong>Cast: </strong> <span>N/A</span>
+                            <strong>Release date: </strong> <span>09 Sep 2001</span>
+                            <strong>Language: </strong> <span>English</span>
+                            <strong>Awards: </strong> <span>Lots</span>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row align-items-end mt-2 mx-3">
+                            <h5><strong >Episode List:</strong></h5>
+                            <table class="table table-sm table-hover mx-2">
+                                <thead>
+                                    <th>Season</th>
+                                    <th>Episode</th>
+                                    <th>Title</th>
+                                    <th>Runtime</th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>This</td>
+                                        <td>That</td>
+                                        <td>And this</td>
+                                        <td>And that</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3 mx-3">
+                        <div class="col-1">
+                            <a data-th-href="@{/protected/loginSuccessful}">Home</a>
+                        </div>
+                        <div class="col-auto">
+                            <input type="text" name="imdbId" data-th-text="${imdbId}">
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            </form>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    </body>
+</html>
