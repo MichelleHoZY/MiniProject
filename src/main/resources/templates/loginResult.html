@@ -12,9 +12,10 @@
         <form method="get" action="/show/{imdbId}">
             <div class="container">
                 <div class="row border-bottom" style="height: 25px;">
-                    <div class="col-10"></div>
-                    <div class="col-1"><a data-th-href="@{/protected/ratings}">My Ratings</a></div>
-                    <div class="col-1">
+                    <div class="col-md-1"><a data-th-href="@{/protected/loginSuccessful}">Home</a></div>
+                    <div class="col-md-9"></div>
+                    <div class="col-md-1"><a data-th-href="@{/protected/ratings}">My Ratings</a></div>
+                    <div class="col-md-1">
                         <form method="get" action="/logout">
                             <a data-th-href="@{/}">Logout</a></div>
                         </form>
@@ -42,9 +43,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-                <div class="footer">
-                    <a data-th-href="@{/protected/loginSuccessful}">Home</a>
                 </div>
             </div>
         </form>
